@@ -31,6 +31,7 @@ uint32_t cyanHue = 25000;
 uint32_t blueHue = 40000;
 uint32_t purpleHue = 47000;
 uint32_t pinkHue = 60000;
+uint32_t disorientedHue;
 
 // sleep
 float brightness = 4;
@@ -54,7 +55,7 @@ void setup() {
 
 // loop() function -- runs repeatedly as long as board is on ---------------
 void loop() {
-  happyLED(greenHue);
+  disorientedLED();
 }
 void sleepLED(uint32_t hue) {  //sequence when sleeping
   uint32_t color;
@@ -68,6 +69,24 @@ void sleepLED(uint32_t hue) {  //sequence when sleeping
 
   strip.fill(strip.ColorHSV(hue, 255, brightness));
   strip.show();
+}
+
+void disorientedLED() {
+  int brightnessSequence[3] = { 255, 180, 0 };
+  disorientedHue+=5;
+  if (millis() - chronoPixel >= 50) {  //  Check for expired time
+    chronoPixel = millis();
+    for (int i = 0; i < pixelNumber; i++) {
+      strip.setPixelColor(i + pixelQueue, strip.ColorHSV(disorientedHue + pixelQueue*20, 255, brightnessSequence[pixelQueue]));  //  Set pixel's color to brightness sequence
+    }
+    for (int i = 0; i < pixelNumber; i += 3) {
+      strip.setPixelColor(i + pixelQueue, strip.ColorHSV(disorientedHue, 0, 0));  //  Set pixel's color to zero on every third pixel
+    }
+    strip.show();  //  Update strip to match
+    pixelQueue++;  //  Advance current pixel
+    if (pixelQueue >= 3)
+      pixelQueue = 0;  //  Loop
+  }
 }
 
 void scaredLED(uint32_t hue) {  //sequence when scared
